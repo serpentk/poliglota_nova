@@ -4,4 +4,4 @@
         ]).
 
 load_sound(_Req) ->
-    {json, #{status => "ok"}}.
+    {json, #{status => <<"ok">>}}.
