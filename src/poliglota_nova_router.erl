@@ -11,7 +11,7 @@ routes(_Environment) ->
       security => false,
       routes => [
                  {"/", fun poliglota_nova_main_controller:index/1 , #{methods => [get]}},
-		 {"/load", fun load_sound_controller:load_sound/1, #{methods => [get]}},
+		 {"/load", fun load_sound_controller:load_sound/1, #{methods => [post]}},
                  {"/heartbeat", fun(_) -> {status, 200} end, #{methods => [get]}}
                 ]
       }].
