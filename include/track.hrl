@@ -1,0 +1,1 @@
+-record(track, {lang, word, location}).
