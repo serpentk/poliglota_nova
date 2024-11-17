@@ -4,6 +4,10 @@
         ]).
 -include_lib("track.hrl").
 
+
+make_filename(FBody) -> 
+io_lib:format("./priv/static/tracks/~32.16.0b.mp3", [binary:decode_unsigned(crypto:hash(md5, FBody))]).
+
 request_forvo(Lang, Word, Api_key) ->
     inets:start(),
     ssl:start(),
@@ -11,4 +15,8 @@ request_forvo(Lang, Word, Api_key) ->
     {ok, {{_Version, 200, _ReasonPhrase}, _Headers, Body}} = httpc:request(Url),
     Data = jiffy:decode(Body),
     {[{<<"items">>, [{Item}]}]} = Data,
-    #track{lang=Lang, word=Word, location=proplists:get_value(<<"pathmp3">>, Item)}.
+    Mp3Url = proplists:get_value(<<"pathmp3">>, Item),
+    {ok, {_V, _H, FileBody}} = httpc:request(Mp3Url),
+    FileName = make_filename(FileBody),
+    file:write_file(FileName, FileBody),
+    #track{lang=Lang, word=Word, location=FileName}.
