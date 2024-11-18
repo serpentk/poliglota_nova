@@ -11,7 +11,11 @@
     stdlib,
     nova
    ]},
-  {env,[]},
+  {env,[{dbconfig, [{host, "localhost"},
+                    {username, "poliglota"},
+                    {password, "poliglota"},
+                    {database, "poliglota"}]},
+        {forvo_key, "your-key-here"}]},
   {modules, []},
   {maintainers, []},
   {licenses, ["Apache 2.0"]},
