@@ -16,15 +16,22 @@ api_url(Lang, Word, Api_key) ->
         "/key/~s/format/json/action/standard-pronunciation/word/~ts/language/~s", 
         [Api_key, Word, Lang])}).
 
+process_response({[{<<"items">>, [{Item}]}]}) ->
+    Mp3Url = proplists:get_value(<<"pathmp3">>, Item),
+    {ok, {_V, _H, FileBody}} = httpc:request(Mp3Url),
+    FileName = make_filename(FileBody),
+    file:write_file(FileName, FileBody),
+    {ok, #track{lang=proplists:get_value(<<"code">>, Item), 
+                word=proplists:get_value(<<"word">>, Item), 
+                location=FileName}};
+
+process_response(Resp) ->
+    {error, Resp}.
+
 request_forvo(Lang, Word, ApiKey) ->
     inets:start(),
     ssl:start(),
     Url = api_url(Lang, Word, ApiKey),
     {ok, {{_Version, 200, _ReasonPhrase}, _Headers, Body}} = httpc:request(Url),
     Data = jiffy:decode(Body),
-    {[{<<"items">>, [{Item}]}]} = Data,
-    Mp3Url = proplists:get_value(<<"pathmp3">>, Item),
-    {ok, {_V, _H, FileBody}} = httpc:request(Mp3Url),
-    FileName = make_filename(FileBody),
-    file:write_file(FileName, FileBody),
-    #track{lang=Lang, word=Word, location=FileName}.
+    process_response(Data).
