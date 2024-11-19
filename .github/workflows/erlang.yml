@@ -24,3 +24,6 @@ jobs:
       run: rebar3 compile
     - name: Run tests
       run: rebar3 do eunit, ct
+
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
