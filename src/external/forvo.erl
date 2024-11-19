@@ -8,10 +8,18 @@
 make_filename(FBody) -> 
 io_lib:format("./priv/static/tracks/~32.16.0b.mp3", [binary:decode_unsigned(crypto:hash(md5, FBody))]).
 
-request_forvo(Lang, Word, Api_key) ->
+api_url(Lang, Word, Api_key) ->
+  uri_string:normalize(
+    #{scheme => "https", 
+      host => "apifree.forvo.com", 
+      path => io_lib:format( 
+        "/key/~s/format/json/action/standard-pronunciation/word/~ts/language/~s", 
+        [Api_key, Word, Lang])}).
+
+request_forvo(Lang, Word, ApiKey) ->
     inets:start(),
     ssl:start(),
-    Url = io_lib:format("https://apifree.forvo.com/key/~s/format/json/action/standard-pronunciation/word/~s/language/~s", [Api_key, Word, Lang]),
+    Url = api_url(Lang, Word, ApiKey),
     {ok, {{_Version, 200, _ReasonPhrase}, _Headers, Body}} = httpc:request(Url),
     Data = jiffy:decode(Body),
     {[{<<"items">>, [{Item}]}]} = Data,
