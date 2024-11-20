@@ -11,5 +11,5 @@ save_track(Track, Dbconfig) ->
 
 get_tracks(Word, Lang, Dbconfig) ->
     {ok, Conn} = epgsql:connect(Dbconfig),
-    {ok, _Info, Locations} = epgsql:equery(Conn, "select location from tracks where word=$1 and lang=$2", [Word, Lang]),
-Locations.
+    {ok, _Info, Locations} = epgsql:equery(Conn, "select id, location from tracks where word=$1 and lang=$2", [Word, Lang]),
+    Locations.
